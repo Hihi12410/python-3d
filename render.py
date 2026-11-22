@@ -28,6 +28,15 @@ def __minmax( x0 : int, x1 : int, y : int ) -> int :
 def __posmax( x : int, y : int ) -> int :
      return __minmax( 0, x, y ) 
 
+# Return bigger number.
+def __bigger( x0 : float, x1 : float ):
+    return x0 if x0 > x1 else x1
+
+# Return smaller number.
+def __smaller( x0 : float, x1 : float ):
+    return x0 if x0 < x1 else x1
+
+
 # Translate RGB to color code.
 def makeColor( r : int, g : int, b : int ) -> Color :
     _r  = __posmax( r, 255 )
@@ -106,8 +115,20 @@ def SetupWindow(
         __canvas.pack()
         return RenderInfoStruct( __root, __canvas, pixelWidth, pixelHeight )
 
-# Raster a wireframe triangle (tri2D).
-def __linedraw_tri3d_uv( _p : list[Point], _texfun : TexFunc, _ctx : RenderInfoStruct ) :
+# Lerping points by dimensions.
+def __lerp_range_y( p0 : Point, p1 : Point ):
+    return range( __smaller( p0.Y, p1.Y ), __bigger( p0.Y, p1.Y ) )
+
+def __lerp_range_x( p0 : Point, p1 : Point ):
+    return range( __smaller( p0.X, p1.X ), __bigger( p0.X, p1.X ) )
+
+# Raster a tri2D.
+def __raster_tri2d_uv( _p : list[Point], _texfun : TexFunc, _ctx : RenderInfoStruct ):
+    
+
+
+# Line-draw a wireframe triangle (tri2D).
+def __linedraw_tri2d_uv( _p : list[Point], _texfun : TexFunc, _ctx : RenderInfoStruct ) :
     _ctx.canvas.create_line( 
         int( _p[0].X * _ctx.pixelWidth  ),
         int( _p[0].Y * _ctx.pixelHeight ),
@@ -137,7 +158,7 @@ def __linedraw_tri3d_uv( _p : list[Point], _texfun : TexFunc, _ctx : RenderInfoS
 def DigestRenderQuery( query : RenderQuery ):
     if query.type == RenderQueryT.line or query.type == RenderQueryT.tri3D:
         raise NotImplementedError("Only tri2D is implemented.")
-    __linedraw_tri3d_uv( query.points, query.texture.callback, query.renderInfo )
+    __linedraw_tri2d_uv( query.points, query.texture.callback, query.renderInfo )
       
 
 # Hello Triangle!
