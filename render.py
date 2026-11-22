@@ -106,13 +106,48 @@ def SetupWindow(
         __canvas.pack()
         return RenderInfoStruct( __root, __canvas, pixelWidth, pixelHeight )
 
+# Raster a wireframe triangle (tri2D).
+def __linedraw_tri3d_uv( _p : list[Point], _texfun : TexFunc, _ctx : RenderInfoStruct ) :
+    _ctx.canvas.create_line( 
+        int( _p[0].X * _ctx.pixelWidth  ),
+        int( _p[0].Y * _ctx.pixelHeight ),
+        int( _p[1].X * _ctx.pixelWidth  ),
+        int( _p[1].Y * _ctx.pixelHeight ),
+        width=2,
+        fill=_texfun( 0, 0 ).code
+    )
+    _ctx.canvas.create_line( 
+        int( _p[1].X * _ctx.pixelWidth  ),
+        int( _p[1].Y * _ctx.pixelHeight ),
+        int( _p[2].X * _ctx.pixelWidth  ),
+        int( _p[2].Y * _ctx.pixelHeight ),
+        width=2,
+        fill=_texfun( 1, 0 ).code
+    )
+    _ctx.canvas.create_line( 
+        int( _p[2].X * _ctx.pixelWidth  ),
+        int( _p[2].Y * _ctx.pixelHeight ),
+        int( _p[0].X * _ctx.pixelWidth  ),
+        int( _p[0].Y * _ctx.pixelHeight ),
+        width=2,
+        fill=_texfun( 0, 1 ).code
+    )
+
+# Render queries.
+def DigestRenderQuery( query : RenderQuery ):
+    if query.type == RenderQueryT.line or query.type == RenderQueryT.tri3D:
+        raise NotImplementedError("Only tri2D is implemented.")
+    __linedraw_tri3d_uv( query.points, query.texture.callback, query.renderInfo )
+      
+
 # Hello Triangle!
 def HelloTriangleTexFuncCallback( U : float, V : float ) -> Color :
     return makeColor( int( U * 255 ), int( V * 255 ), int( ( U-V ) * 255 ) )
 
 HelloTriangleTexFunc = TexFunc(
     type=TexFuncT.UV,
-    callback=HelloTriangleTexFuncCallback
+    callback=HelloTriangleTexFuncCallback,
+    color=None
 )
 
 def makeHelloTriangleRenderQuery( renderInfoStruct : RenderInfoStruct ):
